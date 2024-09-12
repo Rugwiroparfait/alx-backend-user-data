@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-filtered_logger.py - A module for filtering and obfuscating/
+filtered_logger.py - A module for filtering and obfuscating
 sensitive information.
 """
 
 import re
 import logging
-from typing import List
+from typing import List, Tuple
+
+# PII fields to obfuscate
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(
@@ -65,3 +68,27 @@ class RedactingFormatter(logging.Formatter):
         return filter_datum(
             self.fields, self.REDACTION, original_message, self.SEPARATOR
             )
+
+
+def get_logger() -> logging.Logger:
+    """
+    Returns a logger object with a custom redacting formatter.
+
+    The logger is named 'user_data', logs messages up to INFO level,
+    and uses the RedactingFormatter to obfuscate PII.
+
+    Returns:
+        logging.Logger: A configured logger object.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False  # Do not propagate logs to other loggers
+
+    # Create a StreamHandler with RedactingFormatter
+    handler = logging.StreamHandler()
+    handler.setFormatter(RedactingFormatter(fields=PII_FIELDS))
+
+    # Add the handler to the logger
+    logger.addHandler(handler)
+
+    return logger
