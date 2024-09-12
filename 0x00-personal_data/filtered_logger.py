@@ -7,6 +7,9 @@ sensitive information.
 import re
 import logging
 from typing import List, Tuple
+import os
+import mysql.connector
+from mysql.connector import connection
 
 # PII fields to obfuscate
 PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
@@ -92,3 +95,33 @@ def get_logger() -> logging.Logger:
     logger.addHandler(handler)
 
     return logger
+
+
+def get_db() -> connection.MySQLConnection:
+    """
+    Connect to a secure MySQL database using credentials from
+    environment variables and return a MySQL connection object.
+
+    Environment Variables:
+        PERSONAL_DATA_DB_USERNAME: Database username.
+        PERSONAL_DATA_DB_PASSWORD: Database password.
+        PERSONAL_DATA_DB_HOST: Database host.
+        PERSONAL_DATA_DB_NAME: Database name.
+
+    Returns:
+        MySQLConnection: A connector to the database.
+    """
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    # Connect to the database using mysql-connector
+    connection = mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=db_name
+    )
+
+    return connection
