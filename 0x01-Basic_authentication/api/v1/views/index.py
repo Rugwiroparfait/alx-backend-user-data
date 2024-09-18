@@ -13,8 +13,16 @@ def status() -> str:
     """
     return jsonify({"status": "OK"})
 
+@app_views.route('/status', methods=['GET'], strict_slash=False)
+def status() -> str:
+    """ GET /api/v1/status
+    Return:
+      - the status of the API
+    """
+    return jsonify({"status": "OK"})
 
-@app_views.route('/stats/', strict_slashes=False)
+
+@app_views.route('/stats/', strict_slash=False)
 def stats() -> str:
     """ GET /api/v1/stats
     Return:
@@ -24,3 +32,12 @@ def stats() -> str:
     stats = {}
     stats['users'] = User.count()
     return jsonify(stats)
+
+
+@app_views.route('/unauthorized', methods=['GET'], strict_slash=False)
+def unauthorized() -> str:
+    """ GET /api/v1/unauthorized
+    Raises:
+      - 401 error
+    """
+    abort(401)
