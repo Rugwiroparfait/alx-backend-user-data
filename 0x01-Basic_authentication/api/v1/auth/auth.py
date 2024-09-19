@@ -18,8 +18,12 @@ class Auth:
         return path not in excluded_paths
 
     def authorization_header(self, request=None) -> str:
-        """ return None """
-        return None
+        """ Implement request validation and ensure that/
+            only authenticated users can access certain routes.
+        """
+        if request is None or 'Authorization' not in request.headers:
+            return None
+        return request.headers['Authorization']
 
     def current_user(self, request=None) -> TypeVar('User'):
         """ Return None. """
