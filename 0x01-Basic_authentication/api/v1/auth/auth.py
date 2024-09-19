@@ -8,8 +8,14 @@ from models.user import User
 class Auth:
     """ The Auth class """
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ return False """
-        return False
+        """ True  if path is not in the list of strings
+            excluded_paths
+        """
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+            return True
+        if path[-1] != "/":
+            path += '/'
+        return path not in excluded_paths
 
     def authorization_header(self, request=None) -> str:
         """ return None """
