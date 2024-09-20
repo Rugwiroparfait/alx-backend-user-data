@@ -10,4 +10,10 @@ from typing import TypeVar
 
 class BasicAuth(Auth):
     """ Basic Auth class"""
-    pass
+    def extract_base64_authorization_header(self, authorization_header: str) -> str:
+        """ Extracts Base64 part of Authorization header"""
+        if authorization_header is None or not isinstance(authorization_header, str):
+            return None
+        if not authorization_header.startswith("Basic "):
+            return None
+        return authorization_header.split("Basic ")[1]
