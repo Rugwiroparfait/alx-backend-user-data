@@ -24,13 +24,34 @@ def view_one_user(user_id: str = None) -> str:
     Return:
       - User object JSON represented
       - 404 if the User ID doesn't exist
+      - Special case for /users/me:
+        - return authencated user if available
+        - return 404 if not authenticated
     """
+    # Handle Special case for /users/me
+    if user_id == "me":
+        if request.current_user is None:
+            abort(404)
+        return jsonify(request.current_user.to_json())
+
     if user_id is None:
         abort(404)
     user = User.get(user_id)
     if user is None:
         abort(404)
     return jsonify(user.to_json())
+
+
+@app_views.route('users/me', methods=['GET'], strict_slashes=False)
+def view_me() -> str:
+    """" Get /api/v1/users/me
+    Return:
+        -Authenticated User object JSON represented
+        - 404 if no user is authenticated
+    """
+    if request.current_user is None:
+        abort(404)
+    return jsonify(request.current_user.to_json())
 
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
