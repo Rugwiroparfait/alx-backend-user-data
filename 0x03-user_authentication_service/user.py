@@ -10,12 +10,13 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
+
 class User(Base):
     """
     User model representinf a record in the users table/
 
     Atrributes:
-        id (int) : the unique identifier for the user (primar key).
+        id (int) : the unique identifier for the user (primary key).
         email (str) : The user's email address (non-nullable).
         hashed_password (str): The hashed password for the user (non-nullable).
         session_id (str): The session identifier for the User (nullable).

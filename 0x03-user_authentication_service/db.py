@@ -9,6 +9,7 @@ from sqlalchemy.orm.session import Session
 
 from user import Base, User
 
+
 class DB:
     """DB class for interacting with the database
     """
@@ -31,21 +32,17 @@ class DB:
         return self.__db_session
 
     def add_user(self, email: str, hashed_password: str) -> User:
-        """Adds a user to the database and returns the User object
+
+        """Adds a user to the database and returns the User object.
 
         Args:
-            email (str): The email of the user
-            hashed_password (str): The hashed passord of the user
+            email (str): The email of the user.
+            hashed_password (str): The hashed password of the user.
 
         Returns:
-            User: The newly created User Object
+            User: The newly created User object.
         """
-        # Create a newly created User object
         new_user = User(email=email, hashed_password=hashed_password)
-
-        # Add the user to the session and commit the transaction
         self._session.add(new_user)
         self._session.commit()
-
-        # Return the new created user
         return new_user
