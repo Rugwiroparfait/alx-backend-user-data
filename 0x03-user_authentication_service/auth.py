@@ -15,6 +15,23 @@ class Auth:
     def __init__(self):
         self._db = DB()
 
+    def valid_login(self, email: str, password: str) -> bool:
+        """
+        Validates credentials: email and password
+        Returbs True if valid, otherwise False
+        """
+        try:
+            # Locate user by email
+            user = self._db.find_user_by(email=email)
+            # Check if the provided password matches the stored hashed password
+            is_valid = bcrypt.checkpw(
+                    password.encode('utf-8'),
+                    user.hashed_password.encode('utf-8')
+            )
+            return is_valid
+        except Exception:
+            return False
+
     def _hash_password(self, password: str) -> bytes:
         """Hashes a password using bcrypt's hashpswd function
         with a generated salt
