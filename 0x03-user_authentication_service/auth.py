@@ -2,7 +2,7 @@
 """
 Auth module
 """
-
+import uuid
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
@@ -68,3 +68,7 @@ class Auth:
             hashed_password = self._hash_password(password)
             user = self._db.add_user(email, hashed_password.decode())
             return user
+
+    def _generate_uuid(self) -> str:
+        """generate a new uuid and returns its string represantation."""
+        return str(uuid.uuid4())
