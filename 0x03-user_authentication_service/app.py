@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Basic Flask app to register users and provide a welcome message.
-This app uses the Auth class to manage user registration.
+Basic Flask app to register users, log them in, and provide a welcome message.
+This app uses the Auth class to manage user registration and session management.
 """
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort, make_response
 from auth import Auth
 
 app = Flask(__name__)
@@ -27,16 +27,47 @@ def register_user() -> jsonify:
     password = request.form.get('password')
 
     if not email or not password:
-        # Handle missing email or password
         return jsonify({"message": "email and password are required"}), 400
 
     try:
-        # Registering a user via the Auth class
         user = AUTH.register_user(email, password)
         return jsonify({"email": user.email, "message": "user created"}), 200
     except ValueError:
-        # If the user already exists, return a 400 error
         return jsonify({"message": "email already registered"}), 400
+
+
+@app.route('/sessions', methods=['POST'])
+def login() -> jsonify:
+    """
+    POST route to log in a user.
+    
+    Expects 'email' and 'password' in the request form data.
+    If credentials are valid, creates a session ID and sets it in a cookie.
+    If invalid, returns a 401 error.
+    
+    Returns:
+        JSON response with a success or error message.
+    """
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if not email or not password:
+        abort(401)
+
+    if not AUTH.valid_login(email, password):
+        abort(401)
+
+    # Create session ID
+    session_id = AUTH.create_session(email)
+
+    if not session_id:
+        abort(401)
+
+    # Create response and set session_id in a cookie
+    response = make_response(jsonify({"email": email, "message": "logged in"}))
+    response.set_cookie("session_id", session_id)
+
+    return response
 
 
 @app.route("/", methods=['GET'])
@@ -51,6 +82,6 @@ def index() -> jsonify:
 
 
 if __name__ == "__main__":
-    # Running the Flask app in debug mode
+    # Running the Flask app
     app.run(host="0.0.0.0", port=5000, debug=True)
 
